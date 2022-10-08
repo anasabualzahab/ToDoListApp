@@ -24,7 +24,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +36,7 @@ public class AddNewTaskActivity extends AppCompatActivity {
     private DatePickerDialog datePickerDialog;
 
     String [] types = {"دعم فني" , "تطوير"};
-    String taskType;
+    String globalTypeTaskTypePicked, datePicked ;
 
     AutoCompleteTextView autoCompleteTextView;
 
@@ -71,8 +70,8 @@ public class AddNewTaskActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String type = adapterView.getItemAtPosition(i).toString();
-                taskType= type;
-                Toast.makeText(getApplicationContext(), "Item " + type,Toast.LENGTH_LONG).show();
+                globalTypeTaskTypePicked= type;
+                Toast.makeText(getApplicationContext(), "Item " + type ,Toast.LENGTH_LONG).show();
             }
         });
 
@@ -108,6 +107,7 @@ public class AddNewTaskActivity extends AppCompatActivity {
                 month = month+1;
                 String date= makeDateString (day, month , year);
 
+                datePicked = date;
                 System.out.println("this is the date " + date);
                 dateButton.setText(date);
             }
@@ -125,7 +125,7 @@ public class AddNewTaskActivity extends AppCompatActivity {
     }
 
     private String makeDateString(int day, int month, int year) {
-        return month + " " + day + " " + year ;
+        return day + "/" + month  + "/" +  year ;
     }
 
     public void openDatePicker(View view) {
@@ -161,13 +161,13 @@ public class AddNewTaskActivity extends AppCompatActivity {
 
                 params.put("action" , "addStudent");
                 params.put("vId" , "");
-                params.put("vAddedDate" , "");
+                params.put("vAddedDate" , getToDayDate());
                 params.put("vAgent_Id" , "");
                 params.put("vAgent" , newAgentName);
                 params.put("vTitle" , newtitle);
                 params.put("vDescription" , newDescription);
-                params.put("vEndDate" , "0");
-                params.put("vType" , "0");
+                params.put("vEndDate" , datePicked);
+                params.put("vType" , globalTypeTaskTypePicked);
                 params.put("vNeedTwoDepartments" , "0");
 
                 return params ;

@@ -1,5 +1,6 @@
 package com.example.todolistapp.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
@@ -9,6 +10,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -18,8 +22,15 @@ import com.example.todolistapp.GetSheetData;
 import com.example.todolistapp.MainActivity;
 import com.example.todolistapp.R;
 import com.example.todolistapp.RecyclerAdapter;
+import com.example.todolistapp.SortType;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -34,7 +45,12 @@ public class HomeFragment extends Fragment {
 
     Button addNewTask ;
 
-    ArrayList<ArrayList<String>> arrayList ;
+    AutoCompleteTextView sortAutoCompleteTextView;
+    ArrayAdapter<String> adapterSortTypes;
+    String [] sortTypes = {"Added Date" , "End Date"};
+
+
+    ArrayList<ArrayList<String>> mainArrayList ;
 
     LinearLayoutManager linearLayoutManager;
 
@@ -45,13 +61,14 @@ public class HomeFragment extends Fragment {
 
     }
 
+    @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
-        arrayList = new ArrayList<>();
+        mainArrayList = new ArrayList<>();
 
         recyclerView = rootView.findViewById(R.id.recyclerView);
         addNewTask = rootView.findViewById(R.id.buttonAddNewTask);
@@ -59,8 +76,9 @@ public class HomeFragment extends Fragment {
 
         linearLayoutManager = new LinearLayoutManager(this.getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerAdapter = new RecyclerAdapter(arrayList);
+        recyclerAdapter = new RecyclerAdapter(mainArrayList);
         recyclerView.setAdapter(recyclerAdapter);
+        recyclerAdapter.notifyDataSetChanged();
 
         addNewTask.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,6 +89,28 @@ public class HomeFragment extends Fragment {
         });
 
         fetchData();
+
+        sortAutoCompleteTextView = rootView.findViewById(R.id.sortAuto_complete_txt);
+        adapterSortTypes = new ArrayAdapter<String>(rootView.getContext() , R.layout.menu_item , sortTypes);
+        sortAutoCompleteTextView.setAdapter(adapterSortTypes);
+
+        sortAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String type = adapterView.getItemAtPosition(i).toString();
+                Toast.makeText(rootView.getContext(), "Item " + type ,Toast.LENGTH_LONG).show();
+
+                if (type.equals("Added Date")){
+                    Collections.sort(mainArrayList , SortType.sortByAddedDate);
+                    recyclerAdapter.notifyDataSetChanged();
+                }else if (type.equals("End Date")){
+                    Collections.sort(mainArrayList , SortType.sortByEndDate);
+                    recyclerAdapter.notifyDataSetChanged();
+                }
+
+
+            }
+        });
 
 
         // Inflate the layout for this fragment
@@ -114,21 +154,44 @@ public class HomeFragment extends Fragment {
                         newArrayList.add(""+response.body().getValues().get(i).get(7));
                         newArrayList.add(""+response.body().getValues().get(i).get(8));
 
-                        arrayList.add(newArrayList);
+                        mainArrayList.add(newArrayList);
                         System.out.println("before change");
-                        System.out.println(arrayList);
+                        System.out.println(mainArrayList);
 
                         recyclerAdapter.notifyDataSetChanged();
                         System.out.println("after change");
-                        System.out.println(arrayList);
-
-
+                        System.out.println(mainArrayList);
 
                     }
-                    arrayList.remove(0);
+                    mainArrayList.remove(0);
 
-                    System.out.println("retrofit");
-                    System.out.println(arrayList);
+                    System.out.println("retrofit before sorting");
+                    //System.out.println(mainArrayList);
+
+                    for(int i = 0 ; i < mainArrayList.size() ; i++){
+                        System.out.println(mainArrayList.get(i));
+
+                    }
+
+                    Collections.sort(mainArrayList, new Comparator<ArrayList<String>>(){
+
+                        @Override
+                        public int compare(ArrayList<String> strings, ArrayList<String> t1) {
+
+                            DateFormat f = new SimpleDateFormat("dd/MM/yyyy");
+
+                            try {
+                                return f.parse(strings.get(4)).compareTo(f.parse(t1.get(4)));
+                            } catch (ParseException e) {
+                                throw new IllegalArgumentException(e);
+                            }
+
+                        }
+                    });
+                    System.out.println("retrofit After sorting");
+                    for(int i = 0 ; i < mainArrayList.size() ; i++){
+                        System.out.println(mainArrayList.get(i));
+                    }
 
 
                 }else {
