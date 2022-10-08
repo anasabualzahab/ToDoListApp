@@ -150,6 +150,7 @@ public class HomeFragment extends Fragment {
                         newArrayList.add(""+response.body().getValues().get(i).get(3));
                         newArrayList.add(""+response.body().getValues().get(i).get(4));
                         newArrayList.add(""+response.body().getValues().get(i).get(5));
+                        //endDate = 4
                         newArrayList.add(""+response.body().getValues().get(i).get(6));
                         newArrayList.add(""+response.body().getValues().get(i).get(7));
                         newArrayList.add(""+response.body().getValues().get(i).get(8));

@@ -52,6 +52,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyHold
         holder.parentItem.setText(arrayListAdapter.get(position).get(1) );
         holder.childItem.setText(arrayListAdapter.get(position).get(2));
         holder.grandChild.setText(arrayListAdapter.get(position).get(3));
+        holder.endDate.setText(arrayListAdapter.get(position).get(4));
     }
 
 
@@ -62,7 +63,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyHold
 
     public class MyHolder extends RecyclerView.ViewHolder{
 
-        TextView parentItem, childItem,grandChild;
+        TextView parentItem, childItem,grandChild,endDate;
         LinearLayout linearLayout , childLayout ;
         CardView    cardView ;
 
@@ -72,6 +73,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyHold
             parentItem = itemView.findViewById(R.id.parentItem);
             childItem = itemView.findViewById(R.id.childItem);
             grandChild = itemView.findViewById(R.id.grandChild);
+            endDate = itemView.findViewById(R.id.endDateValueTextView);
 
             childLayout = itemView.findViewById(R.id.childLayout);
             linearLayout = itemView.findViewById(R.id.layout);
